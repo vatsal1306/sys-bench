@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+    benchmark:
+        build: .
+        image: sys-bench:latest
+        container_name: sys-bench-runner
+        # This enables GPU access inside the container
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        -   driver: nvidia
+                            count: all
+                            capabilities: [ gpu ]
+        volumes:
+            # Mount current directory to /data to save logs and test disk speed
+            - .:/data
+        # Remove container after run (optional, but clean)
+#        user: "1000:1000" # Uncomment if you have permission issues with generated files
