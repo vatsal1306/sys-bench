@@ -9,8 +9,6 @@ on:
         branches: [ "main" ]
 
 env:
-    # Replace with your actual Docker Hub image name (username/repo-name)
-    # Example: "johndoe/sys-bench"
     IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/sys-bench
 
 jobs:
@@ -21,6 +19,15 @@ jobs:
             packages: write
 
         steps:
+            # Free up disk space on the runner
+            -   name: Free Disk Space (Ubuntu)
+                run: |
+                    sudo rm -rf /usr/share/dotnet
+                    sudo rm -rf /usr/local/lib/android
+                    sudo rm -rf /opt/ghc
+                    sudo rm -rf /opt/hostedtoolcache/CodeQL
+                    sudo docker image prune --all --force
+
             -   name: Checkout repository
                 uses: actions/checkout@v4
 
