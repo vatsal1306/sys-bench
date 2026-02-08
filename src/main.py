@@ -2,11 +2,8 @@ import os
 import platform
 import sys
 
-from benchmarks.cpu import CPUBenchmark
-from benchmarks.disk import DiskBenchmark
-from benchmarks.gpu import GPUBenchmark
-from benchmarks.network import NetworkBenchmark
-from utils.logger import BenchmarkLogger
+from benchmarks import CPUBenchmark, GPUBenchmark, DiskBenchmark, NetworkBenchmark
+from utils import BenchmarkLogger
 
 
 def get_sys_info(logger):
