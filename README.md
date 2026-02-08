@@ -31,15 +31,23 @@ sys-bench/
 ├── run.sh                # Entry point script (wraps Python execution)  
 ├── requirements.txt      # Python dependencies  
 └── src/                  # Source code  
+    ├── __init__.py       # Versioning
     ├── main.py  
     └── benchmarks/       # Individual test modules
 ```
 
 ## **⚡ How to Run**
 
-### **Method 1: Using Docker Compose (Recommended)**
+### **Method 1: Pulling from Docker Hub (Recommended)**
+The fastest way to run the tool without cloning the source code is to pull from [our docker hub](https://hub.docker.com/r/vatsal1306/sys-bench/tags). If you want to run any previous version, you can specify the tag (e.g., `1.0.0`). The `latest` tag will always point to the most recent build version.
 
-This is the easiest method as it handles volume mounting and GPU resource flags automatically.
+```shell
+docker run --rm --gpus all -v $(pwd):/data vatsal1306/sys-bench:latest
+````
+
+### **Method 2: Using Docker Compose **
+
+Recommended if you have cloned the repository and want to modify the code. It handles volume mounting and GPU resource flags automatically.
 
 1. **Build and Run Docker:**  
 ```shell
@@ -50,7 +58,7 @@ docker-compose up --build
    * Live output will appear in your terminal.  
    * A report file will be generated in your current directory: `./benchmark_report.log`
 
-### **Method 2: Manual Docker Run**
+### **Method 3: Manual Docker Run**
 
 If you prefer to build the image manually:
 
