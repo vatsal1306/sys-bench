@@ -1,3 +1,10 @@
+[![Build and Push to Docker Hub](https://github.com/vatsal1306/sys-bench/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/vatsal1306/sys-bench/actions)
+[![Docker Pulls](https://img.shields.io/docker/pulls/vatsal1306/sys-bench.svg)](https://hub.docker.com/r/vatsal1306/sys-bench)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white)
+![NVIDIA](https://img.shields.io/badge/NVIDIA-%2376B900.svg?logo=nvidia&logoColor=white)
+
 # **System Benchmark Tool**
 
 A unified, containerized benchmarking suite designed for **Linux** servers. This tool performs stress tests and performance measurements for **CPU**, **GPU (CUDA)**, **Disk I/O**, and **Network speed** in a safe, reproducible environment.
@@ -108,5 +115,5 @@ docker run --rm --gpus all -v $(pwd):/data sys-bench
 ## **📜 License**
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## **📞 Contact**
+## **📩 Contact**
 For questions or support, please open an issue on GitHub or contact the maintainer at [
