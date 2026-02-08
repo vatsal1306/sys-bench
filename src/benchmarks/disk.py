@@ -20,50 +20,47 @@ class DiskBenchmark(Benchmark):
 
         test_file = os.path.join(self.target_dir, "fio_test_file")
         self.logger.info(f"Target Dir : {self.target_dir}")
-        self.logger.info(f"Test Type  : Sequential Read/Write (1GB)")
+        self.logger.info(f"Test Type  : Sequential Read/Write (10GB)")
 
-        # Construct FIO command
-        # --direct=1 (Bypass OS cache for real disk speed)
-        # --rw=read/write
-        # --bs=1M (Large block size for throughput test)
-
+        # --size=10G
         common_args = [
             "fio", "--name=bench", f"--filename={test_file}",
-            "--size=1G", "--bs=1M", "--direct=1", "--ioengine=posixaio",
+            "--size=10G", "--bs=1M", "--direct=1", "--ioengine=posixaio",
             "--group_reporting", "--terse-version=3", "--output-format=terse"
         ]
 
         try:
             # 1. WRITE TEST
-            self.logger.info("Running Write Test...")
+            self.logger.info("Running Write Test (10GB)... this may take a while.")
             cmd_write = common_args + ["--rw=write"]
             result = subprocess.run(cmd_write, capture_output=True, text=True)
             if result.returncode == 0:
-                # Parse Terse Output (3rd field is bandwidth in KB/s)
-                # Format: 3;bench;...;write_kb_sec;...
+                # FIO Terse v3 Field 48 is Write Bandwidth in KB/s
                 parts = result.stdout.split(';')
-                write_bw_mb = int(parts[48]) / 1024  # Field 48 is write_bw (approx)
-                self.logger.info(f"Write Speed: {write_bw_mb:.2f} MB/s")
+                write_bw_kb = int(parts[48])
+                self.logger.info(f"Write Speed: {write_bw_kb} KB/s")
             else:
-                self.logger.error(f"‼️ Write Test Failed: {result.stderr}")
+                self.logger.info(f"Write Test Failed: {result.stderr}")
 
             # 2. READ TEST
-            self.logger.info("Running Read Test...")
+            self.logger.info("Running Read Test (10GB)...")
             cmd_read = common_args + ["--rw=read"]
             result = subprocess.run(cmd_read, capture_output=True, text=True)
             if result.returncode == 0:
+                # FIO Terse v3 Field 7 is Read Bandwidth in KB/s
                 parts = result.stdout.split(';')
-                read_bw_mb = int(parts[7]) / 1024  # Field 7 is read_bw
-                self.logger.info(f"Read Speed : {read_bw_mb:.2f} MB/s")
+                read_bw_kb = int(parts[7])
+                self.logger.info(f"Read Speed : {read_bw_kb} KB/s")
             else:
                 self.logger.error(f"‼️ Read Test Failed: {result.stderr}")
 
-            self.logger.info(f">> Context : Higher is Better.")
+            self.logger.info(f"\n>> Context : Higher is Better.")
 
         except Exception as e:
-            self.logger.excep(f"ERROR: Disk Benchmark failed - {str(e)}")
+            self.logger.excep(f"‼️ ERROR: Disk Benchmark failed - {str(e)}")
         finally:
             if os.path.exists(test_file):
-                os.remove(test_file)
-
-            self.logger.info("Cleaned up test file.")
+                try:
+                    os.remove(test_file)
+                except:
+                    pass

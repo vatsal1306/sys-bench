@@ -6,7 +6,7 @@ from .base import Benchmark
 class NetworkBenchmark(Benchmark):
     def run(self):
         self.logger.header("NETWORK BENCHMARK")
-        self.logger.info("Running Speedtest (Ookla)... please wait.")
+        self.logger.info("Running Speedtest... please wait.")
 
         try:
             cmd = ["speedtest-cli", "--simple"]
@@ -16,7 +16,7 @@ class NetworkBenchmark(Benchmark):
                 lines = result.stdout.strip().split('\n')
                 for line in lines:
                     self.logger.info(f"  {line}")
-                self.logger.info(f">> Context : High Upload/Download is Good. Low Ping is Good.")
+                self.logger.info(f"\n>> Context : High Upload/Download is Good. Low Ping is Good.")
             else:
                 self.logger.error(f"‼️ ERROR: Speedtest failed - {result.stderr}")
 

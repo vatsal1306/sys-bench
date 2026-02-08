@@ -14,9 +14,6 @@ class GPUBenchmark(Benchmark):
             return
 
         try:
-            device_count = torch.cuda.device_count()
-            self.logger.info(f"Detected {device_count} GPU(s). Testing GPU 0...")
-
             device = torch.device("cuda:0")
             props = torch.cuda.get_device_properties(device)
             total_mem_gb = props.total_memory / 1e9
@@ -41,9 +38,10 @@ class GPUBenchmark(Benchmark):
             elif free_mem_gb < 8.0:
                 matrix_size = 8000
 
-            self.logger.info(f"Workload   : Matrix Mult ({matrix_size}x{matrix_size})")
+            iterations = 100  # Loop to stress GPU
+            self.logger.info(f"Workload   : ({matrix_size}x{matrix_size}) | Iterations: {iterations}")
 
-            # Allocation Test
+            # Allocation
             t1 = torch.randn(matrix_size, matrix_size, device=device)
             t2 = torch.randn(matrix_size, matrix_size, device=device)
 
@@ -53,21 +51,30 @@ class GPUBenchmark(Benchmark):
 
             # Benchmark
             start = time.time()
-            torch.mm(t1, t2)
+            for _ in range(iterations):
+                torch.mm(t1, t2)
             torch.cuda.synchronize()
             end = time.time()
 
             duration = end - start
-            gflops = (2 * (matrix_size ** 3)) / duration / 1e9
 
-            self.logger.info(f"Time Taken : {duration} seconds")
-            self.logger.info(f"Score      : {gflops} TFLOPS (approx)")
-            self.logger.info(f">> Context : Higher is Better.")
+            # Formatting Time
+            if duration < 1.0:
+                time_str = f"{duration * 1000:.4f} ms"
+            else:
+                time_str = f"{duration} sec"
+
+            total_ops = 2 * (matrix_size ** 3) * iterations
+            tflops = total_ops / duration / 1e12  # TeraFLOPS
+
+            self.logger.info(f"Time Taken : {time_str}")
+            self.logger.info(f"Score      : {tflops:.2f} TFLOPS (approx)")
+            self.logger.info(f"\n>> Context : Higher is Better.")
 
         except RuntimeError as e:
             if "out of memory" in str(e):
-                self.logger.error(f"ERROR: GPU OOM. The GPU is likely too busy with other tasks. {str(e)}")
+                self.logger.error(f"‼️ ERROR: GPU OOM. The GPU is likely too busy with other tasks. {str(e)}")
             else:
-                self.logger.excep(f"ERROR: GPU Benchmark failed - {str(e)}")
+                self.logger.excep(f"‼️ ERROR: GPU Benchmark failed - {str(e)}")
         except Exception as e:
-            self.logger.excep(f"ERROR: Unexpected GPU failure - {str(e)}")
+            self.logger.excep(f"‼️ ERROR: Unexpected GPU failure - {str(e)}")
