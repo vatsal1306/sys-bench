@@ -3,5 +3,5 @@ System Benchmark Tool
 A unified suite for benchmarking CPU, GPU, Disk, and Network performance.
 """
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 __author__ = "vatsal1306"

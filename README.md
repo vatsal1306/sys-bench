@@ -52,7 +52,7 @@ The fastest way to run the tool without cloning the source code is to pull from 
 docker run --rm --gpus all -v $(pwd):/data vatsal1306/sys-bench:latest
 ````
 
-### **Method 2: Using Docker Compose **
+### **Method 2: Using Docker Compose**
 
 Recommended if you have cloned the repository and want to modify the code. It handles volume mounting and GPU resource flags automatically.
 
@@ -116,4 +116,4 @@ docker run --rm --gpus all -v $(pwd):/data sys-bench
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## **📩 Contact**
-For questions or support, please open an issue on GitHub or contact the maintainer at [
+For questions or support, please open an issue on GitHub or contact the maintainer at [vatsal1399@gmail.com](mailto:vatsal1399@gmail.com)
