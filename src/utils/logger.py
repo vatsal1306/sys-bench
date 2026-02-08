@@ -25,7 +25,7 @@ class BenchmarkLogger:
             fh.setFormatter(formatter)
             self.logger.addHandler(fh)
         except PermissionError:
-            print(f"⚠️ WARNING: Cannot write to {self.log_file} due to permisson error. Logging to console only.")
+            print(f"⚠️ WARNING: Cannot write to {self.log_file} due to permission error. Logging to console only.")
 
     def info(self, message):
         self.logger.info(message)
