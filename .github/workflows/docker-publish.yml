@@ -1,0 +1,68 @@
+name: Build and Push to Docker Hub
+
+on:
+    push:
+        branches: [ "main" ]
+        # Also trigger when you push a tag like v1.0, v2.1
+        tags: [ 'v*.*.*' ]
+    pull_request:
+        branches: [ "main" ]
+
+env:
+    # Replace with your actual Docker Hub image name (username/repo-name)
+    # Example: "johndoe/sys-bench"
+    IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/sys-bench
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+
+        steps:
+            -   name: Checkout repository
+                uses: actions/checkout@v4
+
+            # Set up QEMU (optional, but good if you ever want to support ARM/Apple Silicon)
+            -   name: Set up QEMU
+                uses: docker/setup-qemu-action@v3
+
+            # Set up Docker Buildx (required for caching and advanced build features)
+            -   name: Set up Docker Buildx
+                uses: docker/setup-buildx-action@v3
+
+            # Login to Docker Hub
+            -   name: Log into Docker Hub
+                if: github.event_name != 'pull_request'
+                uses: docker/login-action@v3
+                with:
+                    username: ${{ secrets.DOCKER_USERNAME }}
+                    password: ${{ secrets.DOCKER_PASSWORD }}
+
+            # Extract metadata (tags, labels) for Docker
+            # This handles tagging automatically:
+            # - Pushing to 'main' branch -> tags as 'main' and 'latest'
+            # - Pushing a git tag 'v1.0' -> tags as '1.0' and 'latest'
+            -   name: Extract Docker metadata
+                id: meta
+                uses: docker/metadata-action@v5
+                with:
+                    images: ${{ env.IMAGE_NAME }}
+                    tags: |
+                        type=raw,value=latest,enable=${{ github.ref == 'format:refs/heads/main' }}
+                        type=ref,event=branch
+                        type=ref,event=tag
+                        type=sha,format=short
+
+            # Build and Push
+            -   name: Build and push Docker image
+                uses: docker/build-push-action@v5
+                with:
+                    context: .
+                    push: ${{ github.event_name != 'pull_request' }}
+                    tags: ${{ steps.meta.outputs.tags }}
+                    labels: ${{ steps.meta.outputs.labels }}
+                    # Caching makes subsequent builds super fast
+                    cache-from: type=gha
+                    cache-to: type=gha,mode=max
